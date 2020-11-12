@@ -10,17 +10,17 @@ from model import MolGen
 parser = argparse.ArgumentParser(description='Molecular Generator Model')
 parser.add_argument('--root', metavar='DATA_DIR', default='./CHEMBL/chembl_27_smiles.txt')
 # hyper parameter tuning
-parser.add_argument('--nlayer', type=int, default=2)
-parser.add_argument('--embed_size', type=int, default=64)
+parser.add_argument('--nlayer', type=int, default=3)
+parser.add_argument('--embed_size', type=int, default=128)
 parser.add_argument('--hid_size', type=int, default=256)
 parser.add_argument('--seq_len', type=int, default=50)
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--clip', type=float, default=0.25)
 parser.add_argument('--dropout', type=float, default=0.)
-parser.add_argument('--epochs', type=int, default=40)
-parser.add_argument('--batch_size', type=int, default=64)
+parser.add_argument('--epochs', type=int, default=80)
+parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--optim', type=str, default='SGD')
-parser.add_argument('--lr_milestones', nargs='+', type=int, default=[10, 20, 30])
+parser.add_argument('--lr_milestones', nargs='+', type=int, default=[20, 40, 60])
 parser.add_argument('--stn', action='store_true')
 # default params
 parser.add_argument('--start_epoch', type=int, metavar='N', default=0)
@@ -28,7 +28,7 @@ parser.add_argument('--weight_decay', type=float, metavar='W', default=0)
 parser.add_argument('--momentum', type=float, metavar='M', default=0.9)
 n_threads = torch.get_num_threads()
 parser.add_argument('--num_threads', type=int, metavar='N_thread', default=n_threads)
-parser.add_argument('--print_freq', type=int, metavar='N', default=10)
+parser.add_argument('--print_freq', type=int, metavar='N', default=20)
 
 # parse args
 args = parser.parse_args()
@@ -84,6 +84,7 @@ def main():
                             gamma=0.1, last_epoch=-1)
     
     for epoch in range(args.start_epoch, args.start_epoch+args.epochs):
+        print('Epoch {}'.format(epoch))
         # train for one epoch
         train(data, model, criterion, optimizer)
 
@@ -120,7 +121,7 @@ def train(data, model, criterion, optimizer):
         # print progress and write to TensorBoard
         running_loss += loss.item()
         if (ibatch+1) % args.print_freq == 0:
-            print('running loss:', running_loss)
+            print('running loss:', running_loss/args.print_freq)
             running_loss = 0.0
 
 
