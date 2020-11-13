@@ -10,7 +10,9 @@ def gen_SMILES():
     SMILES = SMILES[lengths <= 50]
     SMILES = SMILES[lengths >= 40]
     print('length between [40, 50]:', SMILES.size)
-    SMILES = SMILES.str.ljust(50, 'X')
+    SMILES = SMILES.str.ljust(51, 'Y')
+    for idx, irow in SMILES.items():
+        SMILES[idx] = 'X' + irow
     # save to file
     SMILES.to_csv('./CHEMBL/chembl_27_smiles.txt', header=None, index=False)
 

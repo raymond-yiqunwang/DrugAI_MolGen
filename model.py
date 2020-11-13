@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 class MolGen(nn.Module):
-    def __init__(self, vocab_size, hidden_size, output_size, embed_size, nlayer, dropout=0):
+    def __init__(self, vocab_size, hidden_size, output_size, embed_size, nlayer, dropout=0.2):
         super(MolGen, self).__init__()
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
@@ -16,10 +16,11 @@ class MolGen(nn.Module):
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, data, hidden):
-        batch_size = data.size(0)
+        seq_len = data.size(0)
+        batch_size = data.size(1)
         net = self.encoder(data)
-        output, hidden = self.rnn(net.view(1, batch_size, -1), hidden)
-        output = self.decoder(output.view(batch_size, -1))
+        output, hidden = self.rnn(net, hidden)
+        output = self.decoder(output)
 
         return output, hidden
 
